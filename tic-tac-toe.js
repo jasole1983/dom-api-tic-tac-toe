@@ -32,16 +32,64 @@ function takeTurn(target) {
     }
     return checkStatus();
 }
+const checkForTie = () => {
+    for (let el of gameBoard){
+        if ( el === ''){
+            return false;
+        }
+    }
+    // if it's a tie set the current player to "none" as the game is over
+    currPlayer = 'none'
+    return true;
+}
+
+function endGame() {
+    const hDiv = document.getElementById('game-status');
+    gameBoard.forEach((el, i) => (el === '') ? gameBoard[i] = 'T' : el = el)
+    hDiv.innerHTML = `WINNER:${currPlayer.toUpperCase()}`;
+    console.log(gameBoard)
+
+}
 
 function checkStatus() {
     let gb = gameBoard;
     if (gb[0] === gb[1] && gb[1] === gb[2] && gb[2] != ""){
-        // update gamestatus;
+        endGame()
+    } else if (gb[3] === gb[4] && gb[4] === gb[5] && gb[5] != ""){
+        endGame()
+
+    } else if (gb[6] === gb[7] && gb[7] === gb[8] && gb[8] != ""){
+        endGame()
+
+    } else if (gb[0] === gb[3] && gb[3] === gb[6] && gb[6] != ""){
+        endGame()
+
+    } else if (gb[1] === gb[4] && gb[4] === gb[7] && gb[7] != ""){
+        endGame()
+
+    } else if (gb[2] === gb[5] && gb[5] === gb[8] && gb[8] != ""){
+        endGame()
+
+    } else if (gb[0] === gb[4] && gb[4] === gb[8] && gb[8] != ""){
+        endGame()
+
+    } else if (gb[2] === gb[4] && gb[4] === gb[6] && gb[6] != ""){
+        endGame()
+
+    } else if (checkForTie()){
+        endGame()
+
+    } else {
+        if (currPlayer === 'x') {
+            currPlayer = 'o';
+        } else if (currPlayer === 'o'){
+            currPlayer = 'x';
+        }
     }
 }
 
 window.addEventListener("DOMContentLoaded" , () => {
-    
+
     const gBoard = document.getElementById("tic-tac-toe-board");
     
     gBoard.addEventListener("click", e => {
