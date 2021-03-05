@@ -18,6 +18,48 @@ let gameBoard = ["", "", "", "", "", "", "", "", ""];
 let gameStatus;
 
 window.addEventListener("DOMContentLoaded", () => {
+    const gBoard = document.getElementById("tic-tac-toe-board");
+    const hDiv = document.getElementById('game-status');
+    const newGame = document.querySelector("div.actions button:first-child");
+    const giveUp = document.querySelector("div.actions button:last-child");
+
+    newGame.disabled = true;
+
+    function saveGameState () {
+        let state = {
+            'currPlayer': currPlayer,
+            'gameBoard': gameBoard,  
+        }
+        let status = JSON.stringify(state);
+        localStorage.setItem('status', status)
+    }
+
+    function setupGame(){
+        for (let i = 0; i < gameBoard.length; i++){
+            let sq = gameBoard[i];
+            let parent = document.getElementById(`square-${i}`)
+            if ( sq === 'x'){
+                makeNewEl('img', parent, ['src', xImg])
+            } else if ( sq === 'o'){
+                makeNewEl('img', parent, ['src', oImg])
+
+            }
+        }
+    }
+
+    function restoreGameState () {
+        
+        if (localStorage.getItem('status') != null){
+            let saved = localStorage.getItem('status')
+            let parsed = JSON.parse(saved)
+            currPlayer = parsed.currPlayer;
+            gameBoard = parsed.gameBoard;
+            newGame.disabled = true;
+            giveUp.disabled = false;
+            setupGame();
+        }
+    }
+    restoreGameState ()
     function takeTurn(target) {
         if (currPlayer === "x") {
             makeNewEl("img", target, ["src", xImg]);
@@ -30,6 +72,7 @@ window.addEventListener("DOMContentLoaded", () => {
             gameBoard[index] = "o";
             // currPlayer = "x";
         }
+
         return checkStatus();
     }
     const checkForTie = () => {
@@ -78,23 +121,13 @@ window.addEventListener("DOMContentLoaded", () => {
                 currPlayer = 'x';
             }
         }
+        saveGameState();
     }
 
-    const gBoard = document.getElementById("tic-tac-toe-board");
-    const hDiv = document.getElementById('game-status');
-    const newGame = document.querySelector("div.actions button:first-child");
-    const giveUp = document.querySelector("div.actions button:last-child");
-    newGame.disabled = true;
-    
-    gBoard.addEventListener("click", e => {
-        let index = e.target.id[e.target.id.length - 1]
-        if (!gameBoard[index]) {
-            takeTurn(e.target)
-        }
-    })
     function makeNewGame() {
         newGame.disabled = true;
         giveUp.disabled = false;
+        localStorage.removeItem('status')
 
         gameBoard = ["", "", "", "", "", "", "", "", ""];
         currPlayer = "x";
@@ -115,7 +148,25 @@ window.addEventListener("DOMContentLoaded", () => {
 
         newGame.disabled = false;
         giveUp.disabled = true;
+        
+
     }
+
+    giveUp.addEventListener('click', e => {
+        if (currPlayer === 'x'){
+            currPlayer = 'o'
+        } else if ( currPlayer === 'o'){
+            currPlayer = 'x'
+        }
+        endGame();
+    })
+    
+    gBoard.addEventListener("click", e => {
+        let index = e.target.id[e.target.id.length - 1]
+        if (!gameBoard[index]) {
+            takeTurn(e.target)
+        }
+    })
     newGame.addEventListener("click", e => {
         makeNewGame();
     })
